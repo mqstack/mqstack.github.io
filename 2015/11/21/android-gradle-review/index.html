@@ -1,0 +1,933 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+<link rel="stylesheet" type="text/css" href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" />
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.2"/>
+
+
+
+
+  <meta name="keywords" content="Android,Gradle," />
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+<meta name="description" content="##基础
+###Android构建过程
+Gradle是以Groovy语言为基础的自动化构建工具。Android的构建系统是建立在Gradle基础上的。
+什么是构建系统(Build System)？Android构建系统是一个工具集，可以用来测试、运行和打包你的app。我们可以从Android studio的菜单上来make project或者直接用命令行。简单的讲，构建的过程就是将源码编译，并将资">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android构建与配置Gradle脚本综述">
+<meta property="og:url" content="http://yoursite.com/2015/11/21/android-gradle-review/index.html">
+<meta property="og:site_name" content="时间是最好的朋友">
+<meta property="og:description" content="##基础
+###Android构建过程
+Gradle是以Groovy语言为基础的自动化构建工具。Android的构建系统是建立在Gradle基础上的。
+什么是构建系统(Build System)？Android构建系统是一个工具集，可以用来测试、运行和打包你的app。我们可以从Android studio的菜单上来make project或者直接用命令行。简单的讲，构建的过程就是将源码编译，并将资">
+<meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-24/19933796.jpg">
+<meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-25/13888049.jpg">
+<meta property="og:updated_time" content="2016-04-20T11:14:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android构建与配置Gradle脚本综述">
+<meta name="twitter:description" content="##基础
+###Android构建过程
+Gradle是以Groovy语言为基础的自动化构建工具。Android的构建系统是建立在Gradle基础上的。
+什么是构建系统(Build System)？Android构建系统是一个工具集，可以用来测试、运行和打包你的app。我们可以从Android studio的菜单上来make project或者直接用命令行。简单的讲，构建的过程就是将源码编译，并将资">
+<meta name="twitter:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-24/19933796.jpg">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'always'
+  };
+</script>
+
+
+
+  <title> Android构建与配置Gradle脚本综述 | 时间是最好的朋友 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">时间是最好的朋友</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'yqeEE9GeLfm-pyT2WDSK','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android构建与配置Gradle脚本综述
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-11-21T16:25:41+08:00" content="2015-11-21">
+              2015-11-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/21/android-gradle-review/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/21/android-gradle-review/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>##基础</p>
+<p>###Android构建过程</p>
+<p>Gradle是以Groovy语言为基础的自动化构建工具。Android的构建系统是建立在Gradle基础上的。</p>
+<p>什么是构建系统(Build System)？Android构建系统是一个工具集，可以用来测试、运行和打包你的app。我们可以从Android studio的菜单上来make project或者直接用命令行。简单的讲，构建的过程就是将源码编译，并将资源文件一起打包并签名的过程。<br><a id="more"></a></p>
+<p><img src="http://7xoljq.com1.z0.glb.clouddn.com/15-11-24/19933796.jpg" alt="构建过程图片"></p>
+<p>如图所示，构建的简要过程如下：</p>
+<ul>
+<li><p>Asset打包工具-aapt将所有的资源文件，例如AndroidManifest和其他xml文件编译，并且生成R.java提供给java编译器</p>
+</li>
+<li><p>aidl工具将aidl接口转换为java接口</p>
+</li>
+<li><p>java编译器将R.java，源码和aidl转换后的接口编译成 .class文件</p>
+</li>
+<li><p>dex工具将编译后的 .class文件和第三方的一些库一起转换为Dalvik字节码</p>
+</li>
+<li><p>apkbuilder工具将 .dex文件、编译好的资源文件及图片等不需要编译的资源文件打包成apk</p>
+</li>
+<li><p>jarsigner将apk文件签名</p>
+</li>
+<li><p>最后zipalign工具优化apk，zipalign工具主要是用来保证未压缩的数据相对于文件初始位置从一个特定的位置开始读取。所有的未压缩数据例如图片和raw文件，都会对齐到4-byte边界。</p>
+</li>
+</ul>
+<p>###Gradle脚本基础</p>
+<p>Android Studio新建一个工程后，会创建一个build.gradle文件，并且在每个module下面也会有一个build.gradle文件。</p>
+<p>一个工程的默认配置文件如下，文件中指定了jcenter为依赖的仓库，并且指定了gradle的版本。</p>
+<pre><code>buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath &apos;com.android.tools.build:gradle:1.3.0&apos;
+
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+</code></pre><p>一个module的默认配置文件如下，<br>    apply plugin: ‘com.android.application’</p>
+<pre><code>android {
+    compileSdkVersion 23
+    buildToolsVersion &quot;23.0.2&quot;
+
+    defaultConfig {
+    applicationId &quot;org.mqstack.myapplication&quot;
+    minSdkVersion 15
+    targetSdkVersion 23
+    versionCode 1
+    versionName &quot;1.0&quot;
+    }
+    buildTypes {
+        release {
+        minifyEnabled false
+        proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])
+    testCompile &apos;junit:junit:4.12&apos;
+    compile &apos;com.android.support:appcompat-v7:23.1.0&apos;
+    compile &apos;com.android.support:design:23.1.0&apos;
+}
+</code></pre><p>其中：</p>
+<blockquote>
+<p>apply plugin 表明当前module是一个app，如果是library则写成 apply plugin: ‘com.android.library’；</p>
+<p>android {…}    配置了android相关的构建选项：</p>
+<p>compileSdkVersion    编译的sdk版本</p>
+<p>buildToolsVersion    构建工具版本</p>
+<p>defaultConfig    配置了AndroidManifest中的一些参数，在构建时会覆盖AndroidManifest</p>
+<p>buildTypes    配置了如何构建app，默认有debug和release两种</p>
+<p>dependencies    表明了当前module依赖关系</p>
+</blockquote>
+<p>一个module可以用三种方式依赖：</p>
+<pre><code>dependencies {
+    // Module dependency
+    compile project(&quot;:lib&quot;)
+
+    // Remote binary dependency
+    compile &apos;com.android.support:appcompat-v7:19.0.1&apos;
+
+    // Local binary dependency
+    compile fileTree(dir:&apos;libs&apos;, include:[&apos;*.jar&apos;])
+}
+</code></pre><ul>
+<li><p>依赖统一工程下的另一个module</p>
+</li>
+<li><p>依赖远程库</p>
+</li>
+<li><p>依赖libs目录下的jar文件</p>
+</li>
+</ul>
+<p>好了，到这里应该能够看懂最简单的gradle脚本了，下一章介绍的知识能够帮助更灵活地配置。</p>
+<p>##进阶</p>
+<p>下面以几个需求为例，介绍gradle灵活强大的自动构建能力。</p>
+<p>###构建不同的编译版本</p>
+<p>我们知道，gradle脚本会默认提供两种构建方式：debug和release。</p>
+<p>不过，如果需要出一个内部demo版本，需要有不一样的包名以便能够跟线上版本共存；需要不同的app名称以区分；也需要不同的版本号。这样的需求该如何实现呢？</p>
+<p>可以通过配置productFlavors来实现。flavor的意思是口味、风味。意味着我们可以使用它构建不同特性的app，productFlavors中可以定义defaultConfig中的属性，构建的时候会覆盖这些属性。</p>
+<p>比如可以新建一个demo flavor，可以替换applicationId、版本号等，使之与正常的app可以同时安装共存。</p>
+<pre><code>productFlavors {
+    demo {
+        applicationId &quot;com.buildsystemexample.app.demo&quot;
+        versionName &quot;1.0-demo&quot;
+    }
+    full {
+        applicationId &quot;com.buildsystemexample.app.full&quot;
+        versionName &quot;1.0-full&quot;
+    }
+}
+</code></pre><p>同时，src目录下，可以新建跟flavor同名的文件夹。文件夹跟main同级，里面可以未每个flavor指定不同的代码或者资源文件。构建的时候，指定的flavor里的代码和资源会覆盖main文件夹中的。</p>
+<p><img src="http://7xoljq.com1.z0.glb.clouddn.com/15-11-25/13888049.jpg" alt=""></p>
+<p>例如可以在demo的Strings文件中修改app_name，这样demo flavor构建出的app，名字就变啦。</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+    &lt;string name=&quot;app_name&quot;&gt;app(demo)&lt;/string&gt;
+&lt;/resources&gt;
+</code></pre><p>###构建不同的渠道</p>
+<p>使用不同的flavor可以构建不同的版本，那么如果需要使用友盟等工具统计渠道，该如何打包呢？</p>
+<p>以友盟为例在Manifest中将value的值改为如下：</p>
+<pre><code>&lt;meta-data
+android:name=&quot;UMENG_CHANNEL&quot;
+android:value=&quot;${UMENG_CHANNEL_VALUE}&quot; /&gt;
+</code></pre><p>我们在defaultConfig中添加placeholder，并给出默认值：</p>
+<pre><code>defaultConfig {
+manifestPlaceholders = [UMENG_CHANNEL_VALUE: &quot;umeng&quot;]
+}
+</code></pre><p>然后添加如下代码，可替换placeholder中的值为flavor的名称了，当然也可以替换为其他想要的名称。</p>
+<pre><code>productFlavors.all { flavor -&gt; 
+    flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+}
+</code></pre><p>###版本号中加时间</p>
+<p>对于有dailybuild需求的团队，每天打的包如果版本名称一样，可能无法区分。可以在构建的版本号中加入日期：</p>
+<pre><code>versionName = &quot;1.0_&quot; + buildTime()
+
+def buildTime() {
+def date = new Date()
+def formattedDate = date.format(&apos;yyyyMMdd&apos;)
+return formattedDate
+}
+</code></pre><p>###自定义apk文件名</p>
+<p>gradle构建出的apk默认名称为“module的名字-debug”，我们可以在build脚本中指定构建出的apk名字。例如，以下代码将apk命名为：app名+版本名+flavor名。</p>
+<pre><code>applicationVariants.all { variant -&gt;
+    variant.outputs.each { output -&gt;
+        def fileName = &quot;appname_v${variant.versionName}_release_${variant.flavorName}.apk&quot;
+        if (variant.buildType.isDebuggable()) {
+            fileName = &quot;appname_v${variant.versionName}_debug_${variant.flavorName}.apk&quot;
+        }
+        output.outputFile = new File(output.outputFile.parent, fileName)
+    }
+}
+</code></pre><p>###指定release keystore</p>
+<p>为了安全，release keystore以及密码等最好只在编译机器上存放，脚本中不要直接写出路径和密码等字符。</p>
+<p>这时候开发时会Android Studio会因为找不到RELEASE_STORE_FILE而报错，只需要在C:\Users\USER.gradle中创建gradle.properties文件，并将四个变量设置为任意值就可以了。这样既不会影响工程中的gradle.properties版本，也能正常编译。</p>
+<pre><code>release {
+    storeFile file(RELEASE_STORE_FILE)
+    storePassword RELEASE_STORE_PASSWORD
+    keyAlias RELEASE_KEY_ALIAS
+    keyPassword RELEASE_KEY_PASSWORD
+}
+</code></pre><p>###打包jar</p>
+<p>有时候，我们新建的module可能是一个library，需要编译成jar包提供给项目使用，而gradle默认没有编译成jar文件而是aar文件。我们知道，jar是不包含资源文件例如图片，xml文件等。而相比较jar，aar能够将资源文件一同打包进去。</p>
+<p>要打出jar包有以下两种方法：</p>
+<ol>
+<li><p>其实构建的时候已经产生了jar文件了，只不过藏得比较深而已。使用以下代码，将jar拷贝到libs文件夹下：</p>
+<pre><code>task makeJar(type: Copy) {
+    delete &apos;build/libs/name.jar&apos;
+    from(&apos;build/intermediates/bundles/release/&apos;)
+    into(&apos;build/libs/&apos;)
+    include(&apos;classes.jar&apos;)
+    rename (&apos;classes.jar&apos;, &apos;name.jar&apos;)
+}
+makeJar.dependsOn(build)
+</code></pre></li>
+</ol>
+<ol>
+<li><p>也可以直接用下面的代码，将class文件打包成jar。</p>
+<pre><code>android.libraryVariants.all { variant -&gt;
+    def name = variant.buildType.name
+    def task = project.tasks.create &quot;jar${name.capitalize()}&quot;, Jar
+    task.dependsOn variant.javaCompile
+        task.from variant.javaCompile.destinationDir
+    artifacts.add(&apos;archives&apos;, task);
+}
+</code></pre></li>
+</ol>
+<p>###打包命令脚本</p>
+<p>使用jenkins可以很方便持续集成，如果没有配置jenkins也可以单独写一个命令脚本，需要打release包的时候跑一下就行了。分享一个我们使用的命令脚本代码如下：</p>
+<pre><code>if [ $# -lt 1 ]; then
+echo $0 &apos; &apos;
+echo please input branch name.
+exit
+fi
+DIR=YOUR_DIR
+BRANCH=$1
+cd $DIR
+git fetch
+git checkout $BRANCH
+git pull origin $BRANCH
+#rm -f $DIR/YOUR_MODULE/build/outputs/apk/*.apk
+$DIR/gradlew clean assembleOneRelease assembleTwoRelease assembleThreeRelease
+</code></pre><p>##参考<br>1.<a href="https://developer.android.com/sdk/installing/studio-build.html" target="_blank" rel="external">https://developer.android.com/sdk/installing/studio-build.html</a><br>2.<a href="http://tools.android.com/tech-docs/new-build-system/user-guide" target="_blank" rel="external">http://tools.android.com/tech-docs/new-build-system/user-guide</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+            <a href="/tags/Gradle/" rel="tag">#Gradle</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/19/set-up-blog-with-hexo/" rel="next" title="使用Hexo搭建博客">
+                <i class="fa fa-chevron-left"></i> 使用Hexo搭建博客
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/26/android-multimedia-compile-ffmpeg/" rel="prev" title="Android多媒体之一：编译ffmpeg">
+                Android多媒体之一：编译ffmpeg <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2015/11/21/android-gradle-review/"
+                   data-title="Android构建与配置Gradle脚本综述" data-url="http://yoursite.com/2015/11/21/android-gradle-review/">
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="https://avatars0.githubusercontent.com/u/1272326?v=3&u=09d52acffbbb2a2f7cb1e6efb13eb0823dc36375&s=140" alt="mqstack" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">mqstack</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/mqstack" target="_blank">
+                  <i class="fa fa-github"></i> GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mqstack</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"mqstack"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.2" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+
+      motionIntegrator.bootstrap();
+    });
+  </script>
+
+  
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

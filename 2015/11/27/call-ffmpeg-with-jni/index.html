@@ -1,0 +1,1026 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+<link rel="stylesheet" type="text/css" href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" />
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.2"/>
+
+
+
+
+  <meta name="keywords" content="Android,FFmpeg,jni," />
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+<meta name="description" content="FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android多媒体之二：jni调用ffmpeg命令">
+<meta property="og:url" content="http://yoursite.com/2015/11/27/call-ffmpeg-with-jni/index.html">
+<meta property="og:site_name" content="时间是最好的朋友">
+<meta property="og:description" content="FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。">
+<meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/6808969.jpg">
+<meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/22794511.jpg">
+<meta property="og:updated_time" content="2016-04-20T11:14:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android多媒体之二：jni调用ffmpeg命令">
+<meta name="twitter:description" content="FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。">
+<meta name="twitter:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/6808969.jpg">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'always'
+  };
+</script>
+
+
+
+  <title> Android多媒体之二：jni调用ffmpeg命令 | 时间是最好的朋友 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">时间是最好的朋友</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'yqeEE9GeLfm-pyT2WDSK','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android多媒体之二：jni调用ffmpeg命令
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-11-27T15:38:42+08:00" content="2015-11-27">
+              2015-11-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/FFmpeg/" itemprop="url" rel="index">
+                    <span itemprop="name">FFmpeg</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/27/call-ffmpeg-with-jni/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/27/call-ffmpeg-with-jni/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。<br><a id="more"></a></p>
+<p>##准备<br>以ffmpeg2.5为例，准备ffmpeg2.5源码，以及编译好的lib和include。编译方法见:</p>
+<p><a href="/2015/11/26/android-multimedia-compile-ffmpeg/">Android多媒体之一：编译ffmpeg</a></p>
+<p>准备ndk，并配好环境变量；准备Android studio。</p>
+<p>##ffmpeg简要分析</p>
+<p>首先看下ffmpeg各个库的作用，这样简单的函数根据函数名就能猜到作用是什么：</p>
+<pre><code>libavcodec encoding/decoding library
+libavfilter graph-based frame editing library
+libavformat I/O and muxing/demuxing library
+libavdevice special devices muxing/demuxing library
+libavutil common utility library
+libswresample audio resampling, format conversion and mixing
+libpostproc post processing library
+libswscale color conversion and scaling library
+</code></pre><p>接下来分析ffmpeg.c的main函数源码，因为我们调用命令就是执行main函数：<br><img src="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/6808969.jpg" alt=""></p>
+<p>main函数主要调用了以下函数：</p>
+<p>register_exit(ffmpeg_cleanup)：注册退出时清理函数；</p>
+<p>av_log_set_flags和parse_loglevel：跟log相关的，不管；</p>
+<p>avcodec_register_all ：注册编码解码器；</p>
+<p>avdevice_register_all：注册特殊设备的封装库；</p>
+<p>avfilter_register_all：注册帧编辑库；</p>
+<p>av_register_all：注册所有封装和分离器；</p>
+<p>avformat_network_init：初始化网络组建，ffmpeg是支持拉取远程视频流的；</p>
+<p>show_banner：打印输出FFmpeg版本信息（编译时间，编译选项，类库信息等）；</p>
+<p>term_init：初始化对终端命令的响应；</p>
+<p>ffmpeg_parse_options：解析输入的参数；</p>
+<p>transcode：转码过程；</p>
+<p>exit_progam：退出和清理。</p>
+<p>##编写代码</p>
+<p>###编写jni代码<br>既然执行命令的入口是在main函数，那我们在java代码中定义一个native方法，并在相应的c代码中调用main函数不就可以了吗。<br>新建一个android工程，我这里用包名org.mqstack.ffmpegjni，新建FFmpegJni.java，写入：</p>
+<pre><code>public class FFmpegJni {
+
+    static {
+        System.loadLibrary(&quot;avutil&quot;);
+        System.loadLibrary(&quot;swresample&quot;);
+        System.loadLibrary(&quot;avcodec&quot;);
+        System.loadLibrary(&quot;avformat&quot;);
+        System.loadLibrary(&quot;swscale&quot;);
+        System.loadLibrary(&quot;avfilter&quot;);
+        System.loadLibrary(&quot;avdevice&quot;);
+        System.loadLibrary(&quot;ffmpegjni&quot;);
+    }
+
+    public int ffmpegRunCommand(String command) {
+        if (command.isEmpty()) {
+            return 1;
+        }
+        String[] args = command.split(&quot; &quot;);
+        for (int i = 0; i &lt; args.length; i++) {
+            Log.d(&quot;ffmpeg-jni&quot;, args[i]);
+        }
+        return run(args.length, args);
+    }
+
+    public native int run(int argc, String[] args);
+}
+</code></pre><p>使用javah生成头文件：</p>
+<pre><code>javah -classpath path_to_FFmpegJni -jni class_name
+</code></pre><p>生成的代码类似如下：</p>
+<pre><code>/* DO NOT EDIT THIS FILE - it is machine generated */
+#include &lt;jni.h&gt;
+/* Header for class org_mqstack_ffmpegjni_FFmpegJni */
+
+#ifndef _Included_org_mqstack_ffmpegjni_FFmpegJni
+#define _Included_org_mqstack_ffmpegjni_FFmpegJni
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+/*
+ * Class:     org_mqstack_ffmpegjni_FFmpegJni
+ * Method:    run
+ * Signature: (I[Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_mqstack_ffmpegjni_FFmpegJni_run
+        (JNIEnv *, jobject, jint, jobjectArray);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+</code></pre><p>编写相应的c文件FFmpegJni.c，代码很好理解：</p>
+<pre><code>#include &quot;logjni.h&quot;
+#include &quot;FFmpegJni.h&quot;
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+int main(int argc, char **argv);
+
+JNIEXPORT jint JNICALL Java_org_mqstack_ffmpegjni_FFmpegJni_run(JNIEnv *env, jobject obj, jint argc, jobjectArray args) {
+    int i = 0;
+    char **argv = NULL;
+    jstring *strr = NULL;
+
+    if (args != NULL) {
+        argv = (char **) malloc(sizeof(char *) * argc);
+        strr = (jstring *) malloc(sizeof(jstring) * argc);
+
+        for (i = 0; i &lt; argc; ++i) {
+            strr[i] = (jstring)(*env)-&gt;GetObjectArrayElement(env, args, i);
+            argv[i] = (char *)(*env)-&gt;GetStringUTFChars(env, strr[i], 0);
+            LOGD(&quot;args: %s&quot;, argv[i]);
+        }
+    }
+
+    LOGD(&quot;Run ffmpeg&quot;);
+    int result = main(argc, argv);
+    LOGD(&quot;ffmpeg result %d&quot;, result);
+
+    for (i = 0; i &lt; argc; ++i) {
+        (*env)-&gt;ReleaseStringUTFChars(env, strr[i], argv[i]);
+    }
+    free(argv);
+    free(strr);
+
+    return result;
+}
+</code></pre><p>其中logjni.h是我写的一个android打印方法的封装：</p>
+<pre><code>#ifndef LOGJAM_H
+#define LOGJAM_H
+
+#include &lt;android/log.h&gt;
+
+#define LOGTAG &quot;FFmpegJni&quot;
+
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOGTAG, __VA_ARGS__) 
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , LOGTAG, __VA_ARGS__) 
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , LOGTAG, __VA_ARGS__) 
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , LOGTAG, __VA_ARGS__) 
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOGTAG, __VA_ARGS__) 
+
+#endif
+</code></pre><p>将上述文件放到工程的jni目录下，既然要执行ffmpeg.c中的函数，显然ffmpeg.c和ffmpeg.h要拷贝到jni目录下。<br>再看ffmpeg.c代码，里面include了一堆lib，</p>
+<pre><code>#include &quot;libavformat/avformat.h&quot;
+#include &quot;libavdevice/avdevice.h&quot;
+#include &quot;libswresample/swresample.h&quot;
+#include &quot;libavutil/opt.h&quot;
+#include &quot;libavutil/channel_layout.h&quot;
+#include &quot;libavutil/parseutils.h&quot;
+#include &quot;libavutil/samplefmt.h&quot;
+#include &quot;libavutil/fifo.h&quot;
+#include &quot;libavutil/intreadwrite.h&quot;
+#include &quot;libavutil/dict.h&quot;
+#include &quot;libavutil/mathematics.h&quot;
+#include &quot;libavutil/pixdesc.h&quot;
+#include &quot;libavutil/avstring.h&quot;
+#include &quot;libavutil/libm.h&quot;
+#include &quot;libavutil/imgutils.h&quot;
+#include &quot;libavutil/timestamp.h&quot;
+#include &quot;libavutil/bprint.h&quot;
+#include &quot;libavutil/time.h&quot;
+#include &quot;libavutil/threadmessage.h&quot;
+#include &quot;libavformat/os_support.h&quot;
+</code></pre><p>那显然要将之前编译成的include文件夹放在jni目录下，同时在jni目录下新建prebuild/armeabi文件夹，将之前编译的so拷贝进去。</p>
+<p>ffmpeg.c中还用到了不是lib中的c</p>
+<pre><code>cmdutils.c ffmpeg_opt.c ffmpeg_filter.c 
+</code></pre><p>还有这些代码中include到的h</p>
+<pre><code>cmdutils.h cmdutils_common_opts.h config.h
+</code></pre><p>将这些文件全部拷贝到jni文件夹。</p>
+<p>###修改main函数<br>由于在终端中输入命令，ffmpeg可以新建进程、执行命令然后在销毁进程。但在java程序中，我们不想让命令执行完就直接退出。于是main函数中要做些改动：</p>
+<p>将所有的异常的exit_progam，都改为return；</p>
+<p>将打印lig的方法都改为android的打印；</p>
+<p>将正常的exit_program改为ffmpeg_cleanup(0)。</p>
+<pre><code>/* parse options and open all input/output files */
+ret = ffmpeg_parse_options(argc, argv);
+    if (ret &lt; 0) {
+        LOGD(&quot;ffmpeg_parse_options err&quot;);
+        return 1;
+}
+
+if (nb_output_files &lt;= 0 &amp;&amp; nb_input_files == 0) {
+        show_usage();
+LOGD(&quot;Use -h to get full help or, even better, run &apos;man %s&apos;\n&quot;, program_name);
+        return 1;
+}
+
+/* file converter / grab */
+if (nb_output_files &lt;= 0) {
+        LOGD(&quot;At least one output file must be specified\n&quot;);
+        return 1;
+}
+
+//     if (nb_input_files == 0) {
+//         av_log(NULL, AV_LOG_FATAL, &quot;At least one input file must be specified\n&quot;);
+//         exit_program(1);
+//     }
+
+current_time = ti = getutime();
+    if (transcode() &lt; 0) {
+        LOGD(&quot;failed~~&quot;);
+        return 1;
+}
+    ti = getutime() - ti;
+    if (do_benchmark) {
+        LOGD(&quot;bench: utime=%0.3fs\n&quot;, ti / 1000000.0);
+}
+    LOGD(&quot;%&quot;PRIu64&quot; frames successfully decoded, %&quot;PRIu64&quot; decoding errors\n&quot;,
+decode_error_stat[0], decode_error_stat[1]);
+    if ((decode_error_stat[0] + decode_error_stat[1]) * max_error_rate &lt; decode_error_stat[1])
+        LOGD(&quot;log error&quot;);
+
+ffmpeg_cleanup(0);
+    return main_return_code;
+</code></pre><p>还要在ffmpeg_cleanup函数的最后加上几行，在进程不销毁的情况下，将一些变量初始化。</p>
+<pre><code>nb_filtergraphs = 0;
+nb_output_files = 0;
+nb_output_streams = 0;
+nb_input_files = 0;
+nb_input_streams = 0;
+</code></pre><p>###编写mk文件</p>
+<p>不多说了，参考<a href="http://developer.android.com/ndk/guides/android_mk.html" target="_blank" rel="external">官方说明</a>。</p>
+<pre><code>LOCAL_PATH:= $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE:= avcodec-prebuilt-armeabi
+LOCAL_SRC_FILES:= prebuilt/armeabi/libavcodec.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE:= avdevice-prebuilt-armeabi
+LOCAL_SRC_FILES:= prebuilt/armeabi/libavdevice.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE:= avfilter-prebuilt-armeabi
+LOCAL_SRC_FILES:= prebuilt/armeabi/libavfilter.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE:= avformat-prebuilt-armeabi
+LOCAL_SRC_FILES:= prebuilt/armeabi/libavformat.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE :=  avutil-prebuilt-armeabi
+LOCAL_SRC_FILES := prebuilt/armeabi/libavutil.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swresample-prebuilt-armeabi
+LOCAL_SRC_FILES := prebuilt/armeabi/libswresample.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swscale-prebuilt-armeabi
+LOCAL_SRC_FILES := prebuilt/armeabi/libswscale.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libffmpegjni
+
+LOCAL_ARM_MODE := arm
+
+LOCAL_SRC_FILES := FFmpegJni.c \
+                   ffmpeg.c \
+                   cmdutils.c \
+                   ffmpeg_opt.c \
+                   ffmpeg_filter.c
+
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lz
+
+LOCAL_SHARED_LIBRARIES:= avcodec-prebuilt-armeabi \
+                         avdevice-prebuilt-armeabi \
+                         avfilter-prebuilt-armeabi \
+                         avformat-prebuilt-armeabi \
+                         avutil-prebuilt-armeabi \
+                         swresample-prebuilt-armeabi \
+                         swscale-prebuilt-armeabi
+
+LOCAL_C_INCLUDES += -L$(SYSROOT)/usr/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
+
+LOCAL_CFLAGS := -DUSE_ARM_CONFIG
+
+include $(BUILD_SHARED_LIBRARY)
+</code></pre><p>##ndk-build</p>
+<p>接下来就cd到jni目录，然后ndk-build编译。编译过程中，应该会提示缺少一些头文件如下，从ffmpeg工程中拷贝过来就可以了。</p>
+<pre><code>libavutil/libm.h
+libavformat/os_support.h
+libavformat/ffm.h network.h url.h
+compat/va_copy.h
+libavresample/avresample.h version.h
+libpostproc/postprocess.h version.h
+</code></pre><p>编译结果在libs/armeabi目录下，如下所示</p>
+<p><img src="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/22794511.jpg" alt=""></p>
+<p>将这些so拷贝到android工程的jniLibs或其他依赖的目录中，跑一条命令试试看吧。</p>
+<p>本文中代码可在我的github中看到。</p>
+<p><a href="https://github.com/mqstack/FFmpegJni" target="_blank" rel="external">https://github.com/mqstack/FFmpegJni</a></p>
+<p>##更多</p>
+<p><a href="/2015/11/26/android-multimedia-compile-ffmpeg/">Android多媒体之一：编译ffmpeg</a><br><a href="/2015/12/03/build-x264-with-ndk/">Android多媒体之三：编译并使用x264库</a></p>
+<p>##参考</p>
+<p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39760711" target="_blank" rel="external">http://blog.csdn.net/leixiaohua1020/article/details/39760711</a></p>
+<p><a href="https://github.com/dxjia/ffmpeg-jni-sample" target="_blank" rel="external">https://github.com/dxjia/ffmpeg-jni-sample</a></p>
+<p><a href="https://github.com/andynicholson/android-ffmpeg-x264" target="_blank" rel="external">https://github.com/andynicholson/android-ffmpeg-x264</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+            <a href="/tags/FFmpeg/" rel="tag">#FFmpeg</a>
+          
+            <a href="/tags/jni/" rel="tag">#jni</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/26/android-multimedia-compile-ffmpeg/" rel="next" title="Android多媒体之一：编译ffmpeg">
+                <i class="fa fa-chevron-left"></i> Android多媒体之一：编译ffmpeg
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/03/build-x264-with-ndk/" rel="prev" title="Android多媒体之三：编译并使用x264库">
+                Android多媒体之三：编译并使用x264库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2015/11/27/call-ffmpeg-with-jni/"
+                   data-title="Android多媒体之二：jni调用ffmpeg命令" data-url="http://yoursite.com/2015/11/27/call-ffmpeg-with-jni/">
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="https://avatars0.githubusercontent.com/u/1272326?v=3&u=09d52acffbbb2a2f7cb1e6efb13eb0823dc36375&s=140" alt="mqstack" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">mqstack</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/mqstack" target="_blank">
+                  <i class="fa fa-github"></i> GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mqstack</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"mqstack"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.2" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+
+      motionIntegrator.bootstrap();
+    });
+  </script>
+
+  
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

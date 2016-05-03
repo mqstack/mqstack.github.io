@@ -1,0 +1,764 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+<link rel="stylesheet" type="text/css" href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" />
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.2"/>
+
+
+
+
+  <meta name="keywords" content="git," />
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+<meta name="description" content="git是目前很强大且应用最广泛的版本控制系统。本文对git中最常用的操作命令做了一些总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git简明教程">
+<meta property="og:url" content="http://yoursite.com/2016/04/23/git-notes/index.html">
+<meta property="og:site_name" content="时间是最好的朋友">
+<meta property="og:description" content="git是目前很强大且应用最广泛的版本控制系统。本文对git中最常用的操作命令做了一些总结。">
+<meta property="og:updated_time" content="2016-05-03T17:17:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git简明教程">
+<meta name="twitter:description" content="git是目前很强大且应用最广泛的版本控制系统。本文对git中最常用的操作命令做了一些总结。">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'always'
+  };
+</script>
+
+
+
+  <title> git简明教程 | 时间是最好的朋友 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">时间是最好的朋友</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'yqeEE9GeLfm-pyT2WDSK','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                git简明教程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-04-23T18:32:59+08:00" content="2016-04-23">
+              2016-04-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/git/" itemprop="url" rel="index">
+                    <span itemprop="name">git</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/23/git-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/23/git-notes/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>git是目前很强大且应用最广泛的版本控制系统。本文对git中最常用的操作命令做了一些总结。<br><a id="more"></a></p>
+<h2 id="配置ssh"><a href="#配置ssh" class="headerlink" title="配置ssh"></a>配置ssh</h2><p>使用http方式访问远程仓库时，pull、push这些操作都需要输入用户名和密码，很繁琐，使用SSH 公钥来进行授权会很方便。</p>
+<p>在git配置SSH步骤如下：</p>
+<h3 id="生成ssh-key"><a href="#生成ssh-key" class="headerlink" title="生成ssh key"></a>生成ssh key</h3><p>在terminal中输入以下：</p>
+<pre><code>ssh-keygen -t rsa -C &quot;email@address.com&quot;
+</code></pre><p>会提示你输入密码，这个密码用来设置访问key的密码，可以为空。<br>之后在~.ssh这个目录会生成id_rsa和is_rsa.pub两个文件；</p>
+<h3 id="添加公钥到你的帐户，以github为例："><a href="#添加公钥到你的帐户，以github为例：" class="headerlink" title="添加公钥到你的帐户，以github为例："></a>添加公钥到你的帐户，以github为例：</h3><p>首先打开is_rsa.pub，拷贝所有信息；拷贝的时候最好使用cat，然后cmd + c或者pbcopy命令。用文本编辑器打开可能会产生多余的字符，导致校验错误。</p>
+<p>登陆github帐户，点击头像进入profile setting -&gt; 点击 SSH and GPG Keys -&gt; 点击 New SSH key ，填写title和key。</p>
+<p>测试你的ssh key是否正常使用：</p>
+<pre><code>ssh -T name@github.com
+</code></pre><h2 id="配置git"><a href="#配置git" class="headerlink" title="配置git"></a>配置git</h2><h3 id="初始化git目录"><a href="#初始化git目录" class="headerlink" title="初始化git目录"></a>初始化git目录</h3><pre><code>git init
+</code></pre><p>在你需要初始化的目录下输入init命令，即可生成.git目录，目录中有HEAD, config, description三个文件和branches, hooks, info, objects, refs五个文件夹。一个仓库便初始化完成了。</p>
+<h3 id="克隆已有的仓库"><a href="#克隆已有的仓库" class="headerlink" title="克隆已有的仓库"></a>克隆已有的仓库</h3><pre><code>git clone
+</code></pre><p>当你在github或者gitlab等平台手动创建仓库后，系统会再服务器上自动初始化完成仓库。之后调用clone命令就可以将远程的仓库克隆一份在本地。我们常说git是分布式版本控制，其分布式体现在去中心化。虽然日常使用中都有一个中心仓库，但每一个克隆下来的仓库都是一个完整的镜像，而每个仓库的地位都是平等的。</p>
+<h3 id="设置远程仓库地址"><a href="#设置远程仓库地址" class="headerlink" title="设置远程仓库地址"></a>设置远程仓库地址</h3><pre><code>git remote set-url origin git@github.com:someaccount/someproject.git
+</code></pre><p>如果本地init的仓库需要推送到新的远程仓库，或者要改变当前仓库的远程url，使用上述命令。</p>
+<p>查看当前的远程地址：<br>    git remote -v </p>
+<h3 id="config设置"><a href="#config设置" class="headerlink" title="config设置"></a>config设置</h3><pre><code>git config --system   配置全局属性           
+git config --global   配置当前用户属性      
+git config --local    配置当前版本库，缺省值   
+git config -l 查看所有属性
+git config user.name &lt;username&gt;
+git config user.email  &lt;email&gt;
+git config core.editor  vim
+git config core.color   auto
+</code></pre><p>初始化完成仓库以后，我们常用的就是设置下自己的名字和邮箱等。使用git config -l 查看所有的属性，也可以直接对某个属性设置值。</p>
+<h2 id="git的使用"><a href="#git的使用" class="headerlink" title="git的使用"></a>git的使用</h2><h3 id="分支操作"><a href="#分支操作" class="headerlink" title="分支操作"></a>分支操作</h3><pre><code>git branch 将本地的分支打印出来
+git branch -r 打印远程所有分支
+git branch -a 将本地和远程所有分支打印出来
+git branch -D branchName 删除branchName分支
+git checkout branchName 切换到branchName分支
+git checkout -b branchName 在当前分支基础上新建一个branchName分支
+</code></pre><p>最常见的操作就是切换分支了，上述命令可以方便地切换或者新建分支。</p>
+<h3 id="提交操作"><a href="#提交操作" class="headerlink" title="提交操作"></a>提交操作</h3><pre><code>git status 查看当前状态
+git add . 把工作空间中所有修改（包括新建和删除）的文件添加到索引库中
+git commit 把索引中所有的修改提交到本地
+git commit --amend 以追加形式提交
+git fetch 将远程仓库拉取到本地镜像中
+git pull  将远程仓库拉取到本地镜像并且合并到本地分支中 git pull = git fetch  + git merge
+git pull --rebase 以rebase方式拉去仓库
+git push origin branchName 将当前分支推送到远程仓库中
+</code></pre><p>git的提交分为几个阶段:</p>
+<ol>
+<li>加入索引：使用git add 命令将修改的文件加入到git的索引中，即受到版本控制了。</li>
+<li>将索引内容添加到仓库中：使用git commit命令将索引中的内容添加到本地仓库，这条命令会产生一次提交记录，并且生成commit id。这条记录可以用来追踪历史的改动记录。</li>
+<li>将本地仓库内容推送到远程：使用git push命令，将当前的分支上所有改动内容推送到远程仓库中。</li>
+</ol>
+<h3 id="合并操作"><a href="#合并操作" class="headerlink" title="合并操作"></a>合并操作</h3><pre><code>git merge branchName 将branchName分支合并到当前分支
+git merge --squash branchName 将branchName中的所有commit合并为一个，并应用到当前分支
+git cherry-pick commitId 将commitId对应的提交应用到当前分支
+git rebase branchName：把你的当前分支里的每个提交(commit)回退，并且把它们临时 保存为补丁(patch)(这些补丁放到&quot;.git/rebase&quot;目录中),然后把当前分支更新到branchName分支，最后把之前的补丁应用到当前分支上。
+</code></pre><p>git可以方便地开新分支开发，完成后合并到主干分支。涉及到两个分支之间的合并操作主要有merge、cherry-pick、rebase三个操作。</p>
+<h3 id="回退操作"><a href="#回退操作" class="headerlink" title="回退操作"></a>回退操作</h3><pre><code>git reset commitId 如果想回到当前分支历史上任意一个commit，可以使用reset
+git reset --hard commitId 与不加hard相比，不加hard虽然git上回退，但所有文件的修改都还保留；加hard连文件都会退掉。
+git revert 撤销某次commit，但会将这次撤销也作为一次commit，即做一次反向修改。
+</code></pre><p>reset和revert的区别是，reset是直接会退到历史版本，且删除此版本之后的所有修改；而revert是将某次commit做一个反向修改，并产生一个新的提交。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag">#git</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/03/build-x264-with-ndk/" rel="next" title="Android多媒体之三：编译并使用x264库">
+                <i class="fa fa-chevron-left"></i> Android多媒体之三：编译并使用x264库
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2016/04/23/git-notes/"
+                   data-title="git简明教程" data-url="http://yoursite.com/2016/04/23/git-notes/">
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="https://avatars0.githubusercontent.com/u/1272326?v=3&u=09d52acffbbb2a2f7cb1e6efb13eb0823dc36375&s=140" alt="mqstack" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">mqstack</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/mqstack" target="_blank">
+                  <i class="fa fa-github"></i> GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置ssh"><span class="nav-number">1.</span> <span class="nav-text">配置ssh</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成ssh-key"><span class="nav-number">1.1.</span> <span class="nav-text">生成ssh key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加公钥到你的帐户，以github为例："><span class="nav-number">1.2.</span> <span class="nav-text">添加公钥到你的帐户，以github为例：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置git"><span class="nav-number">2.</span> <span class="nav-text">配置git</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化git目录"><span class="nav-number">2.1.</span> <span class="nav-text">初始化git目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#克隆已有的仓库"><span class="nav-number">2.2.</span> <span class="nav-text">克隆已有的仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置远程仓库地址"><span class="nav-number">2.3.</span> <span class="nav-text">设置远程仓库地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#config设置"><span class="nav-number">2.4.</span> <span class="nav-text">config设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git的使用"><span class="nav-number">3.</span> <span class="nav-text">git的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分支操作"><span class="nav-number">3.1.</span> <span class="nav-text">分支操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提交操作"><span class="nav-number">3.2.</span> <span class="nav-text">提交操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并操作"><span class="nav-number">3.3.</span> <span class="nav-text">合并操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回退操作"><span class="nav-number">3.4.</span> <span class="nav-text">回退操作</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mqstack</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"mqstack"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.2" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+
+      motionIntegrator.bootstrap();
+    });
+  </script>
+
+  
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

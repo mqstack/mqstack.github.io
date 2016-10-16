@@ -51,7 +51,7 @@
 <meta property="og:description" content="FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。">
 <meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/6808969.jpg">
 <meta property="og:image" content="http://7xoljq.com1.z0.glb.clouddn.com/15-11-30/22794511.jpg">
-<meta property="og:updated_time" content="2016-04-20T11:14:38.000Z">
+<meta property="og:updated_time" content="2016-10-16T03:28:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android多媒体之二：jni调用ffmpeg命令">
 <meta name="twitter:description" content="FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。">
@@ -291,11 +291,10 @@
 
       
         <span itemprop="articleBody"><p>FFmpeg除了提供了强大的编解码库之外，也提供了一些命令行工具ffmpeg、ffplay、ffprobe、ffserver。如果对lib不太熟悉，而要实现的功能也比较简单，可以直接调用ffmpeg的命令实现。<br><a id="more"></a></p>
-<p>##准备<br>以ffmpeg2.5为例，准备ffmpeg2.5源码，以及编译好的lib和include。编译方法见:</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>以ffmpeg2.5为例，准备ffmpeg2.5源码，以及编译好的lib和include。编译方法见:</p>
 <p><a href="/2015/11/26/android-multimedia-compile-ffmpeg/">Android多媒体之一：编译ffmpeg</a></p>
 <p>准备ndk，并配好环境变量；准备Android studio。</p>
-<p>##ffmpeg简要分析</p>
-<p>首先看下ffmpeg各个库的作用，这样简单的函数根据函数名就能猜到作用是什么：</p>
+<h2 id="ffmpeg简要分析"><a href="#ffmpeg简要分析" class="headerlink" title="ffmpeg简要分析"></a>ffmpeg简要分析</h2><p>首先看下ffmpeg各个库的作用，这样简单的函数根据函数名就能猜到作用是什么：</p>
 <pre><code>libavcodec encoding/decoding library
 libavfilter graph-based frame editing library
 libavformat I/O and muxing/demuxing library
@@ -318,8 +317,7 @@ libswscale color conversion and scaling library
 <p>ffmpeg_parse_options：解析输入的参数；</p>
 <p>transcode：转码过程；</p>
 <p>exit_progam：退出和清理。</p>
-<p>##编写代码</p>
-<p>###编写jni代码<br>既然执行命令的入口是在main函数，那我们在java代码中定义一个native方法，并在相应的c代码中调用main函数不就可以了吗。<br>新建一个android工程，我这里用包名org.mqstack.ffmpegjni，新建FFmpegJni.java，写入：</p>
+<h2 id="编写代码"><a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h2><h3 id="编写jni代码"><a href="#编写jni代码" class="headerlink" title="编写jni代码"></a>编写jni代码</h3><p>既然执行命令的入口是在main函数，那我们在java代码中定义一个native方法，并在相应的c代码中调用main函数不就可以了吗。<br>新建一个android工程，我这里用包名org.mqstack.ffmpegjni，新建FFmpegJni.java，写入：</p>
 <pre><code>public class FFmpegJni {
 
     static {
@@ -415,11 +413,11 @@ JNIEXPORT jint JNICALL Java_org_mqstack_ffmpegjni_FFmpegJni_run(JNIEnv *env, job
 
 #define LOGTAG &quot;FFmpegJni&quot;
 
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOGTAG, __VA_ARGS__) 
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , LOGTAG, __VA_ARGS__) 
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , LOGTAG, __VA_ARGS__) 
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , LOGTAG, __VA_ARGS__) 
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOGTAG, __VA_ARGS__) 
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOGTAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , LOGTAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , LOGTAG, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , LOGTAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOGTAG, __VA_ARGS__)
 
 #endif
 </code></pre><p>将上述文件放到工程的jni目录下，既然要执行ffmpeg.c中的函数，显然ffmpeg.c和ffmpeg.h要拷贝到jni目录下。<br>再看ffmpeg.c代码，里面include了一堆lib，</p>
@@ -445,11 +443,11 @@ JNIEXPORT jint JNICALL Java_org_mqstack_ffmpegjni_FFmpegJni_run(JNIEnv *env, job
 #include &quot;libavformat/os_support.h&quot;
 </code></pre><p>那显然要将之前编译成的include文件夹放在jni目录下，同时在jni目录下新建prebuild/armeabi文件夹，将之前编译的so拷贝进去。</p>
 <p>ffmpeg.c中还用到了不是lib中的c</p>
-<pre><code>cmdutils.c ffmpeg_opt.c ffmpeg_filter.c 
+<pre><code>cmdutils.c ffmpeg_opt.c ffmpeg_filter.c
 </code></pre><p>还有这些代码中include到的h</p>
 <pre><code>cmdutils.h cmdutils_common_opts.h config.h
 </code></pre><p>将这些文件全部拷贝到jni文件夹。</p>
-<p>###修改main函数<br>由于在终端中输入命令，ffmpeg可以新建进程、执行命令然后在销毁进程。但在java程序中，我们不想让命令执行完就直接退出。于是main函数中要做些改动：</p>
+<h3 id="修改main函数"><a href="#修改main函数" class="headerlink" title="修改main函数"></a>修改main函数</h3><p>由于在终端中输入命令，ffmpeg可以新建进程、执行命令然后在销毁进程。但在java程序中，我们不想让命令执行完就直接退出。于是main函数中要做些改动：</p>
 <p>将所有的异常的exit_progam，都改为return；</p>
 <p>将打印lig的方法都改为android的打印；</p>
 <p>将正常的exit_program改为ffmpeg_cleanup(0)。</p>
@@ -499,8 +497,7 @@ nb_output_files = 0;
 nb_output_streams = 0;
 nb_input_files = 0;
 nb_input_streams = 0;
-</code></pre><p>###编写mk文件</p>
-<p>不多说了，参考<a href="http://developer.android.com/ndk/guides/android_mk.html" target="_blank" rel="external">官方说明</a>。</p>
+</code></pre><h3 id="编写mk文件"><a href="#编写mk文件" class="headerlink" title="编写mk文件"></a>编写mk文件</h3><p>不多说了，参考<a href="http://developer.android.com/ndk/guides/android_mk.html" target="_blank" rel="external">官方说明</a>。</p>
 <pre><code>LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -566,8 +563,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_CFLAGS := -DUSE_ARM_CONFIG
 
 include $(BUILD_SHARED_LIBRARY)
-</code></pre><p>##ndk-build</p>
-<p>接下来就cd到jni目录，然后ndk-build编译。编译过程中，应该会提示缺少一些头文件如下，从ffmpeg工程中拷贝过来就可以了。</p>
+</code></pre><h2 id="ndk-build"><a href="#ndk-build" class="headerlink" title="ndk-build"></a>ndk-build</h2><p>接下来就cd到jni目录，然后ndk-build编译。编译过程中，应该会提示缺少一些头文件如下，从ffmpeg工程中拷贝过来就可以了。</p>
 <pre><code>libavutil/libm.h
 libavformat/os_support.h
 libavformat/ffm.h network.h url.h
@@ -579,10 +575,8 @@ libpostproc/postprocess.h version.h
 <p>将这些so拷贝到android工程的jniLibs或其他依赖的目录中，跑一条命令试试看吧。</p>
 <p>本文中代码可在我的github中看到。</p>
 <p><a href="https://github.com/mqstack/FFmpegJni" target="_blank" rel="external">https://github.com/mqstack/FFmpegJni</a></p>
-<p>##更多</p>
-<p><a href="/2015/11/26/android-multimedia-compile-ffmpeg/">Android多媒体之一：编译ffmpeg</a><br><a href="/2015/12/03/build-x264-with-ndk/">Android多媒体之三：编译并使用x264库</a></p>
-<p>##参考</p>
-<p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39760711" target="_blank" rel="external">http://blog.csdn.net/leixiaohua1020/article/details/39760711</a></p>
+<h2 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h2><p><a href="/2015/11/26/android-multimedia-compile-ffmpeg/">Android多媒体之一：编译ffmpeg</a><br><a href="/2015/12/03/build-x264-with-ndk/">Android多媒体之三：编译并使用x264库</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39760711" target="_blank" rel="external">http://blog.csdn.net/leixiaohua1020/article/details/39760711</a></p>
 <p><a href="https://github.com/dxjia/ffmpeg-jni-sample" target="_blank" rel="external">https://github.com/dxjia/ffmpeg-jni-sample</a></p>
 <p><a href="https://github.com/andynicholson/android-ffmpeg-x264" target="_blank" rel="external">https://github.com/andynicholson/android-ffmpeg-x264</a></p>
 </span>
@@ -741,7 +735,7 @@ libpostproc/postprocess.h version.h
           <div class="post-toc">
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ffmpeg简要分析"><span class="nav-number">2.</span> <span class="nav-text">ffmpeg简要分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写代码"><span class="nav-number">3.</span> <span class="nav-text">编写代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编写jni代码"><span class="nav-number">3.1.</span> <span class="nav-text">编写jni代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改main函数"><span class="nav-number">3.2.</span> <span class="nav-text">修改main函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写mk文件"><span class="nav-number">3.3.</span> <span class="nav-text">编写mk文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ndk-build"><span class="nav-number">4.</span> <span class="nav-text">ndk-build</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多"><span class="nav-number">5.</span> <span class="nav-text">更多</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

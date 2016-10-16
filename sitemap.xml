@@ -4,7 +4,35 @@
   <url>
     <loc>http://www.mqstack.tk/blog/blog/2016/05/28/android-bind-net/</loc>
     
-    <lastmod>2016-08-11T17:39:11.000Z</lastmod>
+    <lastmod>2016-10-16T03:29:16.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.mqstack.tk/blog/blog/2015/11/27/call-ffmpeg-with-jni/</loc>
+    
+    <lastmod>2016-10-16T03:28:04.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.mqstack.tk/blog/blog/2015/11/19/set-up-blog-with-hexo/</loc>
+    
+    <lastmod>2016-10-16T03:26:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.mqstack.tk/blog/blog/2015/11/21/android-gradle-review/</loc>
+    
+    <lastmod>2016-10-16T03:26:34.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.mqstack.tk/blog/blog/2015/11/26/android-multimedia-compile-ffmpeg/</loc>
+    
+    <lastmod>2016-10-16T03:26:33.000Z</lastmod>
     
   </url>
   
@@ -23,34 +51,6 @@
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/27/call-ffmpeg-with-jni/</loc>
-    
-    <lastmod>2016-04-20T11:14:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/19/set-up-blog-with-hexo/</loc>
-    
-    <lastmod>2016-04-20T11:14:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/26/android-multimedia-compile-ffmpeg/</loc>
-    
-    <lastmod>2016-04-20T11:14:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/21/android-gradle-review/</loc>
-    
-    <lastmod>2016-04-20T11:14:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.mqstack.tk/blog/404.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
@@ -65,14 +65,14 @@
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/categories/index.html</loc>
+    <loc>http://www.mqstack.tk/blog/tags/index.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/tags/index.html</loc>
+    <loc>http://www.mqstack.tk/blog/categories/index.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
     

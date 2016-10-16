@@ -49,7 +49,7 @@
 <meta property="og:url" content="http://www.mqstack.tk/blog/2016/05/28/android-bind-net/index.html">
 <meta property="og:site_name" content="时间是最好的朋友">
 <meta property="og:description" content="Android从4.2版本开始，逐步支持了多网络功能。相关的api能够让开发者选择想要的网络设备访问，并且各个设备之间的切换和绑定也越来越方便。">
-<meta property="og:updated_time" content="2016-08-11T17:39:11.000Z">
+<meta property="og:updated_time" content="2016-10-16T03:29:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android多网络机制浅析">
 <meta name="twitter:description" content="Android从4.2版本开始，逐步支持了多网络功能。相关的api能够让开发者选择想要的网络设备访问，并且各个设备之间的切换和绑定也越来越方便。">
@@ -348,8 +348,7 @@
 <p>adb shell “settings put global captive_portal_detection_enabled 0”</p>
 </blockquote>
 <p>但这样会有一个问题，就是如果连接上一个需要网页验证的wifi，就没有办法自动跳到登陆界面了。</p>
-<p>##多网络连接机制</p>
-<p>一直以来Android系统的访问网络的类型都是不可选的，连接WiFi走WiFi，否则走Cellular。但从5.0版本开始引入了多网络连接机制，引用：</p>
+<h2 id="多网络连接机制"><a href="#多网络连接机制" class="headerlink" title="多网络连接机制"></a>多网络连接机制</h2><p>一直以来Android系统的访问网络的类型都是不可选的，连接WiFi走WiFi，否则走Cellular。但从5.0版本开始引入了多网络连接机制，引用：</p>
 <blockquote>
 <p>Android 5.0 provides new multi-networking APIs that let your app dynamically scan for available networks with specific capabilities, and establish a connection to them. This functionality is useful when your app requires a specialized network, such as an SUPL, MMS, or carrier-billing network, or if you want to send data using a particular type of transport protocol.</p>
 </blockquote>
@@ -359,8 +358,7 @@
 </blockquote>
 <p>可以将进程绑定到特定的网络，这样即使是wifi打开的情况下也可以使用Cellular访问网络了。但是当WiFi连接时，不管WiFi是否联网，系统默认依然是会选择走WiFi，只有手动绑定app进程才能切到Cellular网络。</p>
 <p><a href="https://developer.android.com/about/versions/android-5.0.html#Wireless" target="_blank" rel="external">https://developer.android.com/about/versions/android-5.0.html#Wireless</a></p>
-<p>##自动切换网络机制</p>
-<p>到了Android6.0，在网络方面又有如下变化。如change note中所说，在之前版本的系统中，当连接到WiFi时，其他类型的网络就会断开；而在6.0中，其他网络不会断开，虽然会优先从WiFi访问，但当检测到连接的WiFi没有联网而其他网络（例如Cellular）是联网的情况下，所有数据的访问会走到Cellular网络。引用：</p>
+<h2 id="自动切换网络机制"><a href="#自动切换网络机制" class="headerlink" title="自动切换网络机制"></a>自动切换网络机制</h2><p>到了Android6.0，在网络方面又有如下变化。如change note中所说，在之前版本的系统中，当连接到WiFi时，其他类型的网络就会断开；而在6.0中，其他网络不会断开，虽然会优先从WiFi访问，但当检测到连接的WiFi没有联网而其他网络（例如Cellular）是联网的情况下，所有数据的访问会走到Cellular网络。引用：</p>
 <blockquote>
 <p>This release introduces the following behavior changes to the Wi-Fi and networking APIs.</p>
 <ul>
@@ -372,10 +370,8 @@
 <p>对大部分开发者来说，这个特性似乎没什么用。在大部分情况下，app不需要关心系统网络如何切换，只要能够成功访问并且得到当前访问的类型就够了。</p>
 <p>但是对某些特殊的应用场景，有了这个特性就惨了。例如：你的app需要访问到本地的网络服务（例如一台没有接入互联网的路由器），如果cellular是关闭的，那可以正常访问；而如果cellular是打开的，所有的数据都默认走到cellular，就无法访问本地的服务了。</p>
 <p>从这个例子看6.0的系统是有些傻，明明可以做到两个网络同时连通，但却很“智能”地选择了一个连接到互联网的网络去访问。当然解决这个问题并不难，使用系统提供的bindsocket和bindprocesstonetwork就够了。</p>
-<p>##多网络同时访问</p>
-<p>正如前一节所说，要同时访问多个网络设备，需要拿到网络对应的Network，并且跟访问的socket做绑定。以网络框架Okhttp和主流图片加载框架picasso与glide为例，用以下几个步骤便可实现网络绑定：</p>
-<p>###获取Network</p>
-<p>参照如下的代码片段，首先构造一个NetworkRequest.Builder，包含wifi但不包含网络访问；其次为ConnectivityManager注册监听；当onAvailable回调获取到Network时，记录下当前连接的wifi。</p>
+<h2 id="多网络同时访问"><a href="#多网络同时访问" class="headerlink" title="多网络同时访问"></a>多网络同时访问</h2><p>正如前一节所说，要同时访问多个网络设备，需要拿到网络对应的Network，并且跟访问的socket做绑定。以网络框架Okhttp和主流图片加载框架picasso与glide为例，用以下几个步骤便可实现网络绑定：</p>
+<h3 id="获取Network"><a href="#获取Network" class="headerlink" title="获取Network"></a>获取Network</h3><p>参照如下的代码片段，首先构造一个NetworkRequest.Builder，包含wifi但不包含网络访问；其次为ConnectivityManager注册监听；当onAvailable回调获取到Network时，记录下当前连接的wifi。</p>
 <pre><code>final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 NetworkRequest.Builder request = new NetworkRequest.Builder()
                 .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
@@ -397,8 +393,7 @@ NetworkRequest.Builder request = new NetworkRequest.Builder()
                 }
             }
         });
-</code></pre><p>###绑定网络</p>
-<p>在setNetwork方法里，做了一下几件事。首先记录下Network，然后更新相关httpclient并绑定网络，然后更新图片加载并添加绑定网络的注册。</p>
+</code></pre><h3 id="绑定网络"><a href="#绑定网络" class="headerlink" title="绑定网络"></a>绑定网络</h3><p>在setNetwork方法里，做了一下几件事。首先记录下Network，然后更新相关httpclient并绑定网络，然后更新图片加载并添加绑定网络的注册。</p>
 <pre><code>public static void setNetwork(Context context, Network network) {
     L.d(&quot;init network&quot; + network);
     NetworkUtil.network = network;
@@ -458,8 +453,7 @@ public void updateClient(Network network) {
 public DataFetcher&lt;InputStream&gt; getResourceFetcher(GlideCustomUrl model, int width, int height) {
     return new OkHttpStreamFetcher(client, model);
 }
-</code></pre><p>###对c层socket的绑定</p>
-<p>以上写的都是在java层创建http的绑定，对于有些应用场景需要在C层访问网络，又如何绑定呢？</p>
+</code></pre><h3 id="对c层socket的绑定"><a href="#对c层socket的绑定" class="headerlink" title="对c层socket的绑定"></a>对c层socket的绑定</h3><p>以上写的都是在java层创建http的绑定，对于有些应用场景需要在C层访问网络，又如何绑定呢？</p>
 <p>参照如下代码，linux系统中创建socket会分配对应的fileDescriptor即文件描述符，这个是一个IO的唯一标识。只要创建完socket之后通过jni调用此java方法，将fileDescriptor绑定到相关network中就可以了。</p>
 <pre><code>@TargetApi(Build.VERSION_CODES.M)
 public static void bindSocketToNetwork(int socketfd) {
@@ -480,7 +474,7 @@ public static void bindSocketToNetwork(int socketfd) {
         }
     }
 }
-</code></pre><p>##相关源码<br>本文涉及到的相关代码可以参考<a href="https://github.com/mqstack/BindSocketDemo" target="_blank" rel="external">BindSocketDemo</a>  </p>
+</code></pre><h2 id="相关源码"><a href="#相关源码" class="headerlink" title="相关源码"></a>相关源码</h2><p>本文涉及到的相关代码可以参考<a href="https://github.com/mqstack/BindSocketDemo" target="_blank" rel="external">BindSocketDemo</a>  </p>
 </span>
       
     </div>
@@ -629,7 +623,7 @@ public static void bindSocketToNetwork(int socketfd) {
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#判断网络连通性机制"><span class="nav-number">1.</span> <span class="nav-text">判断网络连通性机制</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#判断网络连通性机制"><span class="nav-number">1.</span> <span class="nav-text">判断网络连通性机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多网络连接机制"><span class="nav-number">2.</span> <span class="nav-text">多网络连接机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动切换网络机制"><span class="nav-number">3.</span> <span class="nav-text">自动切换网络机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多网络同时访问"><span class="nav-number">4.</span> <span class="nav-text">多网络同时访问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取Network"><span class="nav-number">4.1.</span> <span class="nav-text">获取Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绑定网络"><span class="nav-number">4.2.</span> <span class="nav-text">绑定网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对c层socket的绑定"><span class="nav-number">4.3.</span> <span class="nav-text">对c层socket的绑定</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关源码"><span class="nav-number">5.</span> <span class="nav-text">相关源码</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

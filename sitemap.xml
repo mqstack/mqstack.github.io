@@ -2,77 +2,77 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/19/set-up-blog-with-hexo/</loc>
+    <loc>http://www.mqstack.ml/blog/about/index.html</loc>
+    
+    <lastmod>2017-03-14T06:05:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.mqstack.ml/blog/blog/2015/11/19/set-up-blog-with-hexo/</loc>
     
     <lastmod>2016-10-16T12:00:04.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2016/05/28/android-bind-net/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2016/05/28/android-bind-net/</loc>
     
     <lastmod>2016-10-16T03:29:16.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/27/call-ffmpeg-with-jni/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2015/11/27/call-ffmpeg-with-jni/</loc>
     
     <lastmod>2016-10-16T03:28:04.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/21/android-gradle-review/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2015/11/21/android-gradle-review/</loc>
     
     <lastmod>2016-10-16T03:26:34.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/11/26/android-multimedia-compile-ffmpeg/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2015/11/26/android-multimedia-compile-ffmpeg/</loc>
     
     <lastmod>2016-10-16T03:26:33.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2016/04/23/git-notes/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2016/04/23/git-notes/</loc>
     
     <lastmod>2016-08-07T10:53:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/blog/2015/12/03/build-x264-with-ndk/</loc>
+    <loc>http://www.mqstack.ml/blog/blog/2015/12/03/build-x264-with-ndk/</loc>
     
     <lastmod>2016-05-03T17:18:12.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/404.html</loc>
+    <loc>http://www.mqstack.ml/blog/404.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/about/index.html</loc>
+    <loc>http://www.mqstack.ml/blog/tags/index.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.mqstack.tk/blog/categories/index.html</loc>
-    
-    <lastmod>2016-04-20T11:14:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.mqstack.tk/blog/tags/index.html</loc>
+    <loc>http://www.mqstack.ml/blog/categories/index.html</loc>
     
     <lastmod>2016-04-20T11:14:38.000Z</lastmod>
     

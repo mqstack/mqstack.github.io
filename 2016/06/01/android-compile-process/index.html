@@ -1,0 +1,848 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,编译,gradle插件," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="我们编写APP代码后，点击运行按钮或者执行gradle命令就可以编译并打包应用了。但是源码究竟是如何变成最后的apk的呢？了解编译流程又能做些什么好玩的东西呢？">
+<meta name="keywords" content="Android,编译,gradle插件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 编译打包流程及gradle插件开发">
+<meta property="og:url" content="http://www.mqstack.ml/blog/2016/06/01/android-compile-process/index.html">
+<meta property="og:site_name" content="时间是最好的朋友">
+<meta property="og:description" content="我们编写APP代码后，点击运行按钮或者执行gradle命令就可以编译并打包应用了。但是源码究竟是如何变成最后的apk的呢？了解编译流程又能做些什么好玩的东西呢？">
+<meta property="og:image" content="https://developer.android.com/images/tools/studio/build-process_2x.png">
+<meta property="og:updated_time" content="2017-06-03T08:16:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 编译打包流程及gradle插件开发">
+<meta name="twitter:description" content="我们编写APP代码后，点击运行按钮或者执行gradle命令就可以编译并打包应用了。但是源码究竟是如何变成最后的apk的呢？了解编译流程又能做些什么好玩的东西呢？">
+<meta name="twitter:image" content="https://developer.android.com/images/tools/studio/build-process_2x.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.mqstack.ml/blog/2016/06/01/android-compile-process/"/>
+
+
+
+
+
+  <title>Android 编译打包流程及gradle插件开发 | 时间是最好的朋友</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">时间是最好的朋友</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'yqeEE9GeLfm-pyT2WDSK','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.mqstack.ml/blog/blog/2016/06/01/android-compile-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mqstack">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/1272326?v=3&u=09d52acffbbb2a2f7cb1e6efb13eb0823dc36375&s=140">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时间是最好的朋友">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 编译打包流程及gradle插件开发</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-01T15:49:24+08:00">
+                2016-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2016/06/01/android-compile-process/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/android-compile-process/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们编写APP代码后，点击运行按钮或者执行gradle命令就可以编译并打包应用了。但是源码究竟是如何变成最后的apk的呢？了解编译流程又能做些什么好玩的东西呢？<br><a id="more"></a></p>
+<p>我们编写APP代码后，点击运行按钮或者执行gradle命令就可以编译并打包应用了。但是源码究竟是如何变成最后的apk的呢？了解编译流程又能做些什么好玩的东西呢？</p>
+<p>了解一些编译打包的流程及工作原理对工程师的开发技能和基础知识的提升都很有必要。所谓知其然，且知其所以然。当你遇到真正的需要制作工具、改进工具的需求时，当你遇到一些google搜索不到的问题需要自己分析时，不懂得原理只会使用工具寸步难行。</p>
+<h1 id="编译流程"><a href="#编译流程" class="headerlink" title="编译流程"></a>编译流程</h1><h2 id="典型的编译打包流程"><a href="#典型的编译打包流程" class="headerlink" title="典型的编译打包流程"></a>典型的编译打包流程</h2><p>一个典型的Android应用的编译流程如下：</p>
+<p><img src="https://developer.android.com/images/tools/studio/build-process_2x.png" alt="Compile process" title="Compile process"></p>
+<p>可以看出，编译打包的过程大致有如下几个步骤：</p>
+<pre><code>1.编译java源码和依赖包，转换为dex，编译资源文件；
+2.将dex和资源打包成apk；
+3.签名、zipalign优化。
+</code></pre><p>这几个步骤结束后，就可以得到目标安装包了。</p>
+<h2 id="gradle编译过程"><a href="#gradle编译过程" class="headerlink" title="gradle编译过程"></a>gradle编译过程</h2><p>我们知道，gradle的编译流程是由一个个task组成的。了解了编译过程中有哪些task，每个task都是做什么用的，那基本编译的流程就理解了。</p>
+<p>如何知道task执行的流程呢？</p>
+<p>新建一个Android工程，在build脚本中对project添加listener，可以打印出编译过程中执行的task。</p>
+<p>listener 的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildTimeListener</span> <span class="keyword">implements</span> <span class="title">TaskExecutionListener</span>, <span class="title">BuildListener</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Clock clock</div><div class="line">    <span class="keyword">private</span> times = []</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buildStarted</span><span class="params">(Gradle gradle)</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">settingsEvaluated</span><span class="params">(Settings settings)</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">projectsLoaded</span><span class="params">(Gradle gradle)</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">projectsEvaluated</span><span class="params">(Gradle gradle)</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buildFinished</span><span class="params">(BuildResult buildResult)</span> </span>&#123;</div><div class="line">        println <span class="string">"Task spend time:"</span></div><div class="line">        <span class="keyword">for</span> (time in times) &#123;</div><div class="line">            <span class="keyword">if</span> (time[<span class="number">0</span>] &gt;= <span class="number">50</span>) &#123;</div><div class="line">                printf <span class="string">"%6sms %s\n"</span>, time</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">beforeExecute</span><span class="params">(Task task)</span> </span>&#123;</div><div class="line">        clock = <span class="keyword">new</span> Clock()</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterExecute</span><span class="params">(Task task, TaskState taskState)</span> </span>&#123;</div><div class="line">        def ms = clock.timeInMs</div><div class="line">        times.add([ms, task.path])</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>添加listener的代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">project.gradle.addListener(<span class="keyword">new</span> BuildTimeListener())</div></pre></td></tr></table></figure></p>
+<p>编译工程后会打印如下示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">Task spend time:</div><div class="line">   151ms :app:prepareComAndroidSupportAnimatedVectorDrawable2531Library</div><div class="line">  1906ms :app:prepareComAndroidSupportAppcompatV72531Library</div><div class="line">   127ms :app:prepareComAndroidSupportSupportCompat2531Library</div><div class="line">    77ms :app:prepareComAndroidSupportSupportCoreUi2531Library</div><div class="line">    50ms :app:prepareComAndroidSupportSupportFragment2531Library</div><div class="line">   124ms :app:prepareComAndroidSupportSupportMediaCompat2531Library</div><div class="line">    60ms :app:prepareComAndroidSupportSupportVectorDrawable2531Library</div><div class="line">   122ms :app:compileDebugAidl</div><div class="line">   332ms :app:generateDebugBuildConfig</div><div class="line">   263ms :app:processDebugManifest</div><div class="line">    69ms :app:dexPassDebugManifest</div><div class="line">  7660ms :app:mergeDebugResources</div><div class="line">  1288ms :app:processDebugResources</div><div class="line">   112ms :app:incrementalDebugJavaCompilationSafeguard</div><div class="line"> 27512ms :app:compileDebugJavaWithJavac</div><div class="line">   286ms :app:compileDebugNdk</div><div class="line">    53ms :app:mergeDebugShaders</div><div class="line"> 12812ms :app:transformClassesWithDexForDebug</div><div class="line">    59ms :app:transformNativeLibsWithStripDebugSymbolForDebug</div><div class="line">   943ms :app:packageDebug</div></pre></td></tr></table></figure>
+<p>顾名思义，通过看这些task的名称能够猜到它的作用了：</p>
+<ol>
+<li>compileDebugAidl 编译aidl接口，支持增量编译</li>
+<li>generateDebugBuildConfig 生成buidconfig类</li>
+<li>processDebugManifest 把所有依赖的aar中的manifest，合并到项目的AndroidManifest.xml中，并根据app中的buildType内容，替换manifest中的占位符，最后输出到app/build/intermediates/manifests/full/debug/AndroidManifest.xml。</li>
+<li>mergeDebugResources 解压所有的aar包输出到app/build/intermediates/exploded-aar，并且把所有的资源文件合并到app/build/intermediates/res/merged/debug目录里</li>
+<li>processDebugResources 1、调用aapt生成项目和所有aar依赖的R.java,输出到app/build/generated/source/r/debug目录<br>2、生成资源索引文件app/build/intermediates/res/resources-debug.ap_<br>3、把符号表输出到 app/build/intermediates/symbols/debug/R.txt</li>
+<li>incrementalDebugJavaCompilationSafeguard IncrementalSafeguard 的作用是以生成的源码文件为输入，当任何源码文件变化时，我们清除AndroidJavaCompile的输出目录，并强制重新编译。</li>
+<li>compileDebugJavaWithJavac 用来把java文件编译成class文件，输出的路径是app/build/intermediates/classes/debug<br>编译的输入目录有 1、项目源码目录，默认路径是app/src/main/java，可以通过sourceSets的dsl配置，允许有多个（打印project.android.sourceSets.main.java.srcDirs可以查看当前所有的源码路径,具体配置可以参考android-doc<br>2、app/build/generated/source/aidl<br>3、app/build/generated/source/buildConfig<br>4、app/build/generated/source/apt(继承javax.annotation.processing.AbstractProcessor做动态代码生成的一些库，输出在这个目录。</li>
+<li>compileDebugNdk 编译ndk代码</li>
+<li>mergeDebugShaders 编译shaders</li>
+<li>transformClassesWithDexForDebug 这个任务的作用是把包含所有class文件的jar包转换为dex，class文件越多转换的越慢<br>输入的jar包路径是app/build/intermediates/transforms/jarMerging/debug/jars/1/1f/combined.jar<br>输出dex的目录是build/intermediates/transforms/dex/debug/folders/1000/1f/main</li>
+<li>transformNativeLibsWithStripDebugSymbolForDebug </li>
+<li>packageDebug 打包apk</li>
+</ol>
+<p>需要注意的是，每个版本的buildtool中的编译流程是大致相同，但是task任务都是有变化的。比如最近的2.x版本增量编译做的越来越好，编译时间大大减少了，通过打印task会发现有很多增量编译的任务。</p>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><p>了解了编译的流程，可以做些什么呢？很多常见的工具优化都是通过在编译期执行自定义代码实现的，比如打渠道包、增量编译、热更新等。</p>
+<p>我们来尝试下，如何自定义一个task，并在指定的时机去执行。</p>
+<h2 id="首先，怎么才能在想要的时机去执行特定的任务呢？"><a href="#首先，怎么才能在想要的时机去执行特定的任务呢？" class="headerlink" title="首先，怎么才能在想要的时机去执行特定的任务呢？"></a>首先，怎么才能在想要的时机去执行特定的任务呢？</h2><p>在这里用到task的两个方法：</p>
+<pre><code>mustRunAfter：表示当前task在某个task后执行
+dependsOn：表示当前task依赖与某个task
+</code></pre><p>用这两个方法可以将我们的task插入到想要的两个task中间，例如：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">manifestTask.mustRunAfter variantOutput.processManifest</div><div class="line">variantOutput.processResources.dependsOn manifestTask</div></pre></td></tr></table></figure></p>
+<h2 id="其次，我们的插件怎么应用到工程中呢？"><a href="#其次，我们的插件怎么应用到工程中呢？" class="headerlink" title="其次，我们的插件怎么应用到工程中呢？"></a>其次，我们的插件怎么应用到工程中呢？</h2><p>跟其他插件一样，用</p>
+<pre><code>apply plugin:
+</code></pre><p>就可以了。</p>
+<p>当依赖了插件以后，编译时会执行Plugin中的apply方法。只要将执行任务的代码放到apply方法中，就可以执行了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">XXXPlugin</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt; </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">apply</span><span class="params">(Project project)</span> </span>&#123;</div><div class="line">		<span class="comment">//Add your code here</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="然后，插件还支持扩展"><a href="#然后，插件还支持扩展" class="headerlink" title="然后，插件还支持扩展"></a>然后，插件还支持扩展</h2><p>通过扩展，可以很方便的在build脚本中向插件传递参数。例如，向application插件中传递sdk版本参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">    compileSdkVersion <span class="number">25</span></div><div class="line">    buildToolsVersion <span class="string">"25.0.2"</span></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>要实现扩展也很简单，自定义一个类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XXXExtension</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">boolean</span> xxxEnable = <span class="keyword">true</span></div><div class="line"></div><div class="line">    String inputMessage = <span class="string">"Default Message"</span></div><div class="line"></div><div class="line">    <span class="keyword">int</span> version = <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在plugin中执行就可以了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">project.extensions.create(<span class="string">'xxxplugin'</span>, XXXExtension)</div></pre></td></tr></table></figure>
+<p>读取扩展参数的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">def config = project.xxxplugin</div></pre></td></tr></table></figure>
+<h2 id="最后，我们实现一个简单的例子"><a href="#最后，我们实现一个简单的例子" class="headerlink" title="最后，我们实现一个简单的例子"></a>最后，我们实现一个简单的例子</h2><p>编写一个常见的打渠道包的插件。其原理就是应用上述的方法，通过参数扩展定义渠道包名，并在编译期间通过修改manifest内容实现打渠道包。</p>
+<p>具体代码参考</p>
+<p><a href="https://github.com/mqstack/DexPass" target="_blank" rel="external">https://github.com/mqstack/DexPass</a></p>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p><a href="http://www.jianshu.com/p/53923d8f241c" target="_blank" rel="external">http://www.jianshu.com/p/53923d8f241c</a></p>
+<p><a href="https://developer.android.com/studio/build/index.html#build-config" target="_blank" rel="external">https://developer.android.com/studio/build/index.html#build-config</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/blog/tags/编译/" rel="tag"># 编译</a>
+          
+            <a href="/blog/tags/gradle插件/" rel="tag"># gradle插件</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/05/28/android-bind-net/" rel="next" title="Android多网络机制浅析">
+                <i class="fa fa-chevron-left"></i> Android多网络机制浅析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/01/android-compile-process/"
+           data-title="Android 编译打包流程及gradle插件开发" data-url="http://www.mqstack.ml/blog/2016/06/01/android-compile-process/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars0.githubusercontent.com/u/1272326?v=3&u=09d52acffbbb2a2f7cb1e6efb13eb0823dc36375&s=140"
+               alt="mqstack" />
+          <p class="site-author-name" itemprop="name">mqstack</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/blog/archives">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/mqstack" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#编译流程"><span class="nav-number">1.</span> <span class="nav-text">编译流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#典型的编译打包流程"><span class="nav-number">1.1.</span> <span class="nav-text">典型的编译打包流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gradle编译过程"><span class="nav-number">1.2.</span> <span class="nav-text">gradle编译过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先，怎么才能在想要的时机去执行特定的任务呢？"><span class="nav-number">2.1.</span> <span class="nav-text">首先，怎么才能在想要的时机去执行特定的任务呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其次，我们的插件怎么应用到工程中呢？"><span class="nav-number">2.2.</span> <span class="nav-text">其次，我们的插件怎么应用到工程中呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#然后，插件还支持扩展"><span class="nav-number">2.3.</span> <span class="nav-text">然后，插件还支持扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后，我们实现一个简单的例子"><span class="nav-number">2.4.</span> <span class="nav-text">最后，我们实现一个简单的例子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">3.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mqstack</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/blog/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"mqstack"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/blog/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/blog/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

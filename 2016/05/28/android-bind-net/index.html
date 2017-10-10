@@ -100,7 +100,8 @@
 <meta property="og:url" content="http://www.mqstack.ml/blog/2016/05/28/android-bind-net/index.html">
 <meta property="og:site_name" content="时间是最好的朋友">
 <meta property="og:description" content="Android从4.2版本开始，逐步支持了多网络功能。相关的api能够让开发者选择想要的网络设备访问，并且各个设备之间的切换和绑定也越来越方便。">
-<meta property="og:updated_time" content="2016-10-16T03:29:16.000Z">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-06-06T02:36:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android多网络机制浅析">
 <meta name="twitter:description" content="Android从4.2版本开始，逐步支持了多网络功能。相关的api能够让开发者选择想要的网络设备访问，并且各个设备之间的切换和绑定也越来越方便。">
@@ -205,6 +206,16 @@
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/blog/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
           </a>
         </li>
       
@@ -447,9 +458,9 @@
 </code></pre><p>简单的说，原理就是访问google的clients3.google.com/generate_204地址，当返回204代码，或者是200并且内容ContentLength是0时，判断网络已连通。否则就是未连上互联网，或者需要身份验证的公共网络。为什么返回200并且ContentLength为0时也认为是连上互联网了呢？因为需要身份验证的系统返回长度不可能是0，可能是因为代理的缘故导致状态码错误。</p>
 <p>使用Android 5.0版本以上原生系统的同学会发现，状态栏上wifi或者cell的图标上会有个叹号。这是因为谷歌被墙，http的response code自然就不会是204了。</p>
 <p>我们看到isCaptivePortal 方法是传入一个参数InetAddress server的。要想在国内使用这个feature，可以将谷歌的地址替换为国内网友架的服务或者自己建一个服务例如：<a href="https://github.com/HorseLuke/drafts/blob/master/sinaapp_generate_204/README.md。" target="_blank" rel="external">https://github.com/HorseLuke/drafts/blob/master/sinaapp_generate_204/README.md。</a></p>
-<p>有网友已经搭好了服务，将地址替换到noisyfox.cn，具体可参考<a href="https://www.noisyfox.cn/45.html，" target="_blank" rel="external">https://www.noisyfox.cn/45.html，</a> 只要一个命令即可：</p>
+<p>或者使用现成的v2ex搭建的，只要一个命令即可：</p>
 <blockquote>
-<p>adb shell “settings put global captive_portal_server noisyfox.cn”</p>
+<p>adb shell “settings put global captive_portal_https_url <a href="https://captive.v2ex.co/generate_204" target="_blank" rel="external">https://captive.v2ex.co/generate_204</a>“</p>
 </blockquote>
 <p>也可以完全禁止掉这个检测：</p>
 <blockquote>
@@ -713,7 +724,7 @@ public static void bindSocketToNetwork(int socketfd) {
           
             <div class="site-state-item site-state-posts">
               <a href="/blog/archives">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -724,7 +735,7 @@ public static void bindSocketToNetwork(int socketfd) {
             
             <div class="site-state-item site-state-categories">
               <a href="/blog/categories/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -735,7 +746,7 @@ public static void bindSocketToNetwork(int socketfd) {
             
             <div class="site-state-item site-state-tags">
               <a href="/blog/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
